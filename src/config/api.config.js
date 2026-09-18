@@ -3,7 +3,7 @@
  * Define la URL base y las rutas de los controladores del backend .NET
  */
 export const API_CONFIG = {
-  BASE_URL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5093/api',
+  BASE_URL: import.meta.env.VITE_API_BASE_URL || 'https://localhost:7017/api',
   ENDPOINTS: {
     AUTH: {
       LOGIN: '/Auth/login',
