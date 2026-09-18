@@ -25,6 +25,7 @@ export const API_CONFIG = {
       BASE: '/Invoices',
       BY_ID: (id) => `/Invoices/${id}`,
       VOID: (id) => `/Invoices/${id}/void`,
+      PAY: (id) => `/Invoices/${id}/pay`,
     },
   },
 };

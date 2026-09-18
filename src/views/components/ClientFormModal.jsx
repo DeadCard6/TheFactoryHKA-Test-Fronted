@@ -1,13 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { X, Save } from 'lucide-react';
+import { X, Save, AlertCircle } from 'lucide-react';
 import { createClientInstance } from '../../models/client.model';
+import { getFieldError } from '../../lib/errorHelper';
 
 export const ClientFormModal = ({ isOpen, onClose, onSave, initialData, isLoading, isViewMode }) => {
   const [formData, setFormData] = useState(createClientInstance());
+  const [fieldErrors, setFieldErrors] = useState({});
+  const [globalError, setGlobalError] = useState(null);
 
   useEffect(() => {
     if (isOpen) {
       setFormData(initialData ? { ...initialData } : createClientInstance());
+      setFieldErrors({});
+      setGlobalError(null);
     }
   }, [isOpen, initialData]);
 
@@ -16,12 +21,27 @@ export const ClientFormModal = ({ isOpen, onClose, onSave, initialData, isLoadin
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    // Limpiar el error de este campo al escribir
+    if (fieldErrors[name.toLowerCase()]) {
+      setFieldErrors(prev => ({ ...prev, [name.toLowerCase()]: undefined }));
+    }
+    setGlobalError(null);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!isViewMode) {
-      onSave(formData);
+      setFieldErrors({});
+      setGlobalError(null);
+      const result = await onSave(formData);
+      if (result && !result.success) {
+        if (result.parsedError) {
+          setFieldErrors(result.parsedError.fieldErrors || {});
+          setGlobalError(result.parsedError.message);
+        } else {
+          setGlobalError('Error inesperado al guardar.');
+        }
+      }
     }
   };
 
@@ -37,6 +57,12 @@ export const ClientFormModal = ({ isOpen, onClose, onSave, initialData, isLoadin
 
         <form onSubmit={handleSubmit} className="auth-form" style={{ padding: '0' }}>
           <div className="modal-body">
+            {globalError && (
+              <div className="alert alert-error" style={{ marginBottom: '1rem', padding: '0.75rem', borderRadius: '0.5rem', display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                <AlertCircle size={18} />
+                <span style={{ fontSize: '0.9rem' }}>{globalError}</span>
+              </div>
+            )}
             <div className="form-grid">
               
               <div className="form-group full-width">
@@ -52,6 +78,11 @@ export const ClientFormModal = ({ isOpen, onClose, onSave, initialData, isLoadin
                     style={{ paddingLeft: '1rem' }}
                     disabled={isViewMode}
                   />
+                  {getFieldError(fieldErrors, 'firstName') && (
+                    <div style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '0.25rem' }}>
+                      {getFieldError(fieldErrors, 'firstName')}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -67,6 +98,11 @@ export const ClientFormModal = ({ isOpen, onClose, onSave, initialData, isLoadin
                     style={{ paddingLeft: '1rem' }}
                     disabled={isViewMode}
                   />
+                  {getFieldError(fieldErrors, 'lastName') && (
+                    <div style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '0.25rem' }}>
+                      {getFieldError(fieldErrors, 'lastName')}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -94,6 +130,11 @@ export const ClientFormModal = ({ isOpen, onClose, onSave, initialData, isLoadin
                     <option value="NIT">NIT</option>
                     <option value="Pasaporte">Pasaporte</option>
                   </select>
+                  {getFieldError(fieldErrors, 'documentType') && (
+                    <div style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '0.25rem' }}>
+                      {getFieldError(fieldErrors, 'documentType')}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -110,6 +151,11 @@ export const ClientFormModal = ({ isOpen, onClose, onSave, initialData, isLoadin
                     style={{ paddingLeft: '1rem' }}
                     disabled={isViewMode}
                   />
+                  {getFieldError(fieldErrors, 'documentNumber') && (
+                    <div style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '0.25rem' }}>
+                      {getFieldError(fieldErrors, 'documentNumber')}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -125,6 +171,11 @@ export const ClientFormModal = ({ isOpen, onClose, onSave, initialData, isLoadin
                     style={{ paddingLeft: '1rem' }}
                     disabled={isViewMode}
                   />
+                  {getFieldError(fieldErrors, 'email') && (
+                    <div style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '0.25rem' }}>
+                      {getFieldError(fieldErrors, 'email')}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -140,6 +191,11 @@ export const ClientFormModal = ({ isOpen, onClose, onSave, initialData, isLoadin
                     style={{ paddingLeft: '1rem' }}
                     disabled={isViewMode}
                   />
+                  {getFieldError(fieldErrors, 'phone') && (
+                    <div style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '0.25rem' }}>
+                      {getFieldError(fieldErrors, 'phone')}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -155,6 +211,11 @@ export const ClientFormModal = ({ isOpen, onClose, onSave, initialData, isLoadin
                     style={{ paddingLeft: '1rem' }}
                     disabled={isViewMode}
                   />
+                  {getFieldError(fieldErrors, 'address') && (
+                    <div style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '0.25rem' }}>
+                      {getFieldError(fieldErrors, 'address')}
+                    </div>
+                  )}
                 </div>
               </div>
 

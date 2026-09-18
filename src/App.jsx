@@ -6,6 +6,9 @@ import { Navbar } from './views/components/Navbar';
 import { DashboardView } from './views/pages/DashboardView';
 import { ClientListView } from './views/pages/ClientListView';
 import { ProductListView } from './views/pages/ProductListView';
+import { InvoiceListView } from './views/pages/InvoiceListView';
+import { InvoiceCreateView } from './views/pages/InvoiceCreateView';
+import { InvoiceDetailView } from './views/pages/InvoiceDetailView';
 import './App.css';
 
 /**
@@ -30,6 +33,9 @@ function App() {
             <Route path="/" element={<DashboardView user={authState.user} />} />
             <Route path="/clients" element={<ClientListView />} />
             <Route path="/products" element={<ProductListView />} />
+            <Route path="/invoices" element={<InvoiceListView />} />
+            <Route path="/invoices/new" element={<InvoiceCreateView />} />
+            <Route path="/invoices/:id" element={<InvoiceDetailView />} />
             {/* Fallback to dashboard */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

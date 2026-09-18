@@ -1,13 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { X, Save } from 'lucide-react';
+import { X, Save, AlertCircle } from 'lucide-react';
 import { createProductInstance } from '../../models/product.model';
+import { getFieldError } from '../../lib/errorHelper';
 
 export const ProductFormModal = ({ isOpen, onClose, onSave, initialData, isLoading, isViewMode, categories }) => {
   const [formData, setFormData] = useState(createProductInstance());
+  const [fieldErrors, setFieldErrors] = useState({});
+  const [globalError, setGlobalError] = useState(null);
 
   useEffect(() => {
     if (isOpen) {
       setFormData(initialData ? { ...initialData } : createProductInstance());
+      setFieldErrors({});
+      setGlobalError(null);
     }
   }, [isOpen, initialData]);
 
@@ -16,11 +21,17 @@ export const ProductFormModal = ({ isOpen, onClose, onSave, initialData, isLoadi
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    if (fieldErrors[name.toLowerCase()]) {
+      setFieldErrors(prev => ({ ...prev, [name.toLowerCase()]: undefined }));
+    }
+    setGlobalError(null);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!isViewMode) {
+      setFieldErrors({});
+      setGlobalError(null);
       // Ensure numeric fields are casted correctly
       const submissionData = {
         ...formData,
@@ -28,7 +39,15 @@ export const ProductFormModal = ({ isOpen, onClose, onSave, initialData, isLoadi
         unitPrice: parseFloat(formData.unitPrice),
         stock: parseInt(formData.stock, 10)
       };
-      onSave(submissionData);
+      const result = await onSave(submissionData);
+      if (result && !result.success) {
+        if (result.parsedError) {
+          setFieldErrors(result.parsedError.fieldErrors || {});
+          setGlobalError(result.parsedError.message);
+        } else {
+          setGlobalError('Error inesperado al guardar.');
+        }
+      }
     }
   };
 
@@ -44,6 +63,12 @@ export const ProductFormModal = ({ isOpen, onClose, onSave, initialData, isLoadi
 
         <form onSubmit={handleSubmit} className="auth-form" style={{ padding: '0' }}>
           <div className="modal-body">
+            {globalError && (
+              <div className="alert alert-error" style={{ marginBottom: '1rem', padding: '0.75rem', borderRadius: '0.5rem', display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                <AlertCircle size={18} />
+                <span style={{ fontSize: '0.9rem' }}>{globalError}</span>
+              </div>
+            )}
             <div className="form-grid">
               
               <div className="form-group full-width">
@@ -59,6 +84,11 @@ export const ProductFormModal = ({ isOpen, onClose, onSave, initialData, isLoadi
                     style={{ paddingLeft: '1rem' }}
                     disabled={isViewMode}
                   />
+                  {getFieldError(fieldErrors, 'name') && (
+                    <div style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '0.25rem' }}>
+                      {getFieldError(fieldErrors, 'name')}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -75,6 +105,11 @@ export const ProductFormModal = ({ isOpen, onClose, onSave, initialData, isLoadi
                     style={{ paddingLeft: '1rem' }}
                     disabled={isViewMode}
                   />
+                  {getFieldError(fieldErrors, 'code') && (
+                    <div style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '0.25rem' }}>
+                      {getFieldError(fieldErrors, 'code')}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -101,6 +136,11 @@ export const ProductFormModal = ({ isOpen, onClose, onSave, initialData, isLoadi
                       <option key={cat.id} value={cat.id}>{cat.name}</option>
                     ))}
                   </select>
+                  {getFieldError(fieldErrors, 'categoryId') && (
+                    <div style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '0.25rem' }}>
+                      {getFieldError(fieldErrors, 'categoryId')}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -125,6 +165,11 @@ export const ProductFormModal = ({ isOpen, onClose, onSave, initialData, isLoadi
                     }}
                     disabled={isViewMode}
                   />
+                  {getFieldError(fieldErrors, 'description') && (
+                    <div style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '0.25rem' }}>
+                      {getFieldError(fieldErrors, 'description')}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -143,6 +188,11 @@ export const ProductFormModal = ({ isOpen, onClose, onSave, initialData, isLoadi
                     style={{ paddingLeft: '1rem' }}
                     disabled={isViewMode}
                   />
+                  {getFieldError(fieldErrors, 'unitPrice') && (
+                    <div style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '0.25rem' }}>
+                      {getFieldError(fieldErrors, 'unitPrice')}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -161,6 +211,11 @@ export const ProductFormModal = ({ isOpen, onClose, onSave, initialData, isLoadi
                     style={{ paddingLeft: '1rem' }}
                     disabled={isViewMode}
                   />
+                  {getFieldError(fieldErrors, 'stock') && (
+                    <div style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '0.25rem' }}>
+                      {getFieldError(fieldErrors, 'stock')}
+                    </div>
+                  )}
                 </div>
               </div>
 

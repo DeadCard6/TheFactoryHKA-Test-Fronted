@@ -36,6 +36,10 @@ export function Navbar({ user, onLogout }) {
           <Package size={18} />
           <span className="hidden sm:inline">Productos</span>
         </Link>
+        <Link to="/invoices" className={`nav-link ${isActive('/invoices') || location.pathname.startsWith('/invoices/') ? 'active' : ''}`}>
+          <ReceiptText size={18} />
+          <span className="hidden sm:inline">Facturas</span>
+        </Link>
       </nav>
 
       <div className="navbar-actions">

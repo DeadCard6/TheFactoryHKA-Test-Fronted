@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { clientService } from '../services/clientService';
+import { parseApiError } from '../lib/errorHelper';
 
 export const useClientController = () => {
   const [clients, setClients] = useState([]);
@@ -29,11 +30,12 @@ export const useClientController = () => {
     try {
       await clientService.createClient(clientData);
       await fetchClients(); // Refrescar lista completa
-      return true;
+      return { success: true };
     } catch (err) {
-      setError(err.response?.data?.message || 'Error al crear el cliente');
+      const parsedError = parseApiError(err);
+      setError(parsedError.message);
       console.error('Error creating client:', err);
-      return false;
+      return { success: false, parsedError };
     } finally {
       setIsLoading(false);
     }
@@ -45,11 +47,12 @@ export const useClientController = () => {
     try {
       await clientService.updateClient(id, clientData);
       await fetchClients(); // Refrescar lista completa
-      return true;
+      return { success: true };
     } catch (err) {
-      setError(err.response?.data?.message || 'Error al actualizar el cliente');
+      const parsedError = parseApiError(err);
+      setError(parsedError.message);
       console.error('Error updating client:', err);
-      return false;
+      return { success: false, parsedError };
     } finally {
       setIsLoading(false);
     }

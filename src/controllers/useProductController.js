@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { productService } from '../services/productService';
+import { parseApiError } from '../lib/errorHelper';
 
 export const useProductController = () => {
   const [products, setProducts] = useState([]);
@@ -39,11 +40,12 @@ export const useProductController = () => {
     try {
       await productService.createProduct(productData);
       await fetchProducts();
-      return true;
+      return { success: true };
     } catch (err) {
-      setError(err.response?.data?.message || 'Error al crear el producto');
+      const parsedError = parseApiError(err);
+      setError(parsedError.message);
       console.error('Error creating product:', err);
-      return false;
+      return { success: false, parsedError };
     } finally {
       setIsLoading(false);
     }
@@ -55,11 +57,12 @@ export const useProductController = () => {
     try {
       await productService.updateProduct(id, productData);
       await fetchProducts();
-      return true;
+      return { success: true };
     } catch (err) {
-      setError(err.response?.data?.message || 'Error al actualizar el producto');
+      const parsedError = parseApiError(err);
+      setError(parsedError.message);
       console.error('Error updating product:', err);
-      return false;
+      return { success: false, parsedError };
     } finally {
       setIsLoading(false);
     }

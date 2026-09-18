@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useProductController } from '../../controllers/useProductController';
 import { ProductFormModal } from '../components/ProductFormModal';
+import { formatCurrency } from '../../lib/formatCurrency';
 import { Package, Plus, Pencil, Search, AlertCircle, Archive, ArchiveRestore, Eye, EyeOff } from 'lucide-react';
 
 export const ProductListView = () => {
@@ -195,7 +196,7 @@ export const ProductListView = () => {
                     </span>
                   </td>
                   <td style={{ textAlign: 'right', fontWeight: 600, color: 'var(--text-main)' }}>
-                    ${product.unitPrice?.toFixed(2)}
+                    {formatCurrency(product.unitPrice)}
                   </td>
                   <td style={{ textAlign: 'center' }}>
                     <span style={{ 

@@ -45,16 +45,17 @@ export const ClientListView = () => {
   };
 
   const handleSave = async (clientData) => {
-    let success = false;
+    let result;
     if (editingClient) {
-      success = await updateClient(editingClient.id, clientData);
+      result = await updateClient(editingClient.id, clientData);
     } else {
-      success = await createClient(clientData);
+      result = await createClient(clientData);
     }
     
-    if (success) {
+    if (result.success) {
       setIsModalOpen(false);
     }
+    return result;
   };
 
   const safeClients = Array.isArray(clients) ? clients : [];
