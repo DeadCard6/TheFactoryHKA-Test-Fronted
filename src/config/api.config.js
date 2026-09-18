@@ -17,6 +17,10 @@ export const API_CONFIG = {
       BASE: '/Products',
       BY_ID: (id) => `/Products/${id}`,
     },
+    CATEGORIES: {
+      BASE: '/Categories',
+      BY_ID: (id) => `/Categories/${id}`,
+    },
     INVOICES: {
       BASE: '/Invoices',
       BY_ID: (id) => `/Invoices/${id}`,
